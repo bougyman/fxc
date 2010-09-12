@@ -11,20 +11,25 @@ module Fxc
 
       def call(env)
         params = ::Rack::Request.new(env)
-        return @app.call(env) unless params["section"]
+        if params["section"]
+          path = params["section"] + "/"
 
-        path = params["section"] + "/"
+          path << case path
+          when "dialplan/"
+            dp_req(params)
+          when "directory/"
+            dir_req(params)
+          when "configuration/"
+            conf_req(params)
+          end
 
-        path << case path
-        when "dialplan/"
-          dp_req(params)
-        when "directory/"
-          dir_req(params)
-        when "configuration/"
-          conf_req(params)
+          env["PATH_INFO"] = "#{env['PATH_INFO']}/#{path}".squeeze('/')
+          env["REQUEST_URI"] = ("%s://%s/%s" % [
+            env["rack.url_scheme"],
+            env["HTTP_HOST"],
+            env["PATH_INFO"]]).squeeze('/')
         end
-
-        env["PATH_INFO"] = "#{env['PATH_INFO']}/#{path}".squeeze('/')
+        #p env
         @app.call(env)
       end
 
@@ -72,6 +77,8 @@ module Fxc
 
       def conf_req(params)
         s = []
+        p "PARAMS: "
+        p params
         if params["key_name"] == "name"
           s << params["key_value"]
         end

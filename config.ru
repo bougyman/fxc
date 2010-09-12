@@ -12,5 +12,5 @@
 # the same configuration.
 
 require ::File.expand_path('app', ::File.dirname(__FILE__))
-Innate.start(:file => __FILE__, :root => Fxc::PATH)
+Innate.start(:file => __FILE__, :root => Fxc::PATH, :started => true)
 run Innate

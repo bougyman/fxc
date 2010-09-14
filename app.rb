@@ -1,12 +1,12 @@
 require "innate"
 require_relative "lib/fxc"
 Dir.glob(Fxc::PATH + "/node/*.rb").each { |node|
-  p node
   require node
 }
 require Fxc::PATH + "lib/rack/middleware"
 Innate.middleware! do |mw|
   mw.use Fxc::Rack::Middleware
+  mw.use Rack::CommonLogger
   mw.innate
 end
 

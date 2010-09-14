@@ -18,7 +18,7 @@ function(head, req){
 
   var result = <document type="freeswitch/xml">
   <section name="configuration">
-    <configuration name={sofia._id} description={sofia.description}>
+    <configuration name={sofia.name} description={sofia.description}>
       <global_settings>
         {each(sofia.global_settings, function(name, value){
           return <param name={name} value={value} />
@@ -61,4 +61,5 @@ function(head, req){
   }
 
   send(result);
+  ;
 }

@@ -1,22 +1,15 @@
 function(head, req){
-  var each = function(obj, callback){
-    var result = <></>;
-    for(key in obj){
-      if(obj.hasOwnProperty(key)){
-        result += callback(key, obj[key]);
-      }
-    }
-    return result;
-  };
-
   var doc = getRow().value;
 
-  start({code: 200, headers: {'Content-Type': 'freeswitch/xml'}});
-  send('<?xml version="1.0" encoding="UTF-8" standalone="no" ?>' + "\n");
   send(
 <document type="freeswitch/xml">
   <section name="configuration">
     <configuration name={doc.name} description={doc.description}>
+      <mappings>
+        {each(doc.mappings, function(name, value){
+          return <map name={name} value={value.join(',')} />
+        })}
+      </mappings>
       <settings>
         {each(doc.settings, function(name, value){
           return <param name={name} value={value} />
@@ -26,5 +19,4 @@ function(head, req){
   </section>
 </document>
   );
-  ;
 }

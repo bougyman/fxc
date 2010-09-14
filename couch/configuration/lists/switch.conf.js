@@ -1,4 +1,4 @@
-function(doc, req){
+function(head, req){
   var each = function(obj, callback){
     var result = <></>;
     for(key in obj){
@@ -9,27 +9,26 @@ function(doc, req){
     return result;
   };
 
-  start({code: 200, headers: {'Content-Type': 'freeswitch/xml'}});
+  var doc = getRow().value;
 
-  return(
-'<?xml version="1.0" encoding="UTF-8" standalone="no" ?>' + "\n" + (
+  start({code: 200, headers: {'Content-Type': 'freeswitch/xml'}});
+  send('<?xml version="1.0" encoding="UTF-8" standalone="no" ?>' + "\n");
+  send(
 <document type="freeswitch/xml">
   <section name="configuration">
-    <configuration name={doc._id} description={doc.description}>
+    <configuration name={doc.name} description={doc.description}>
+      <cli-keybindings>
+        {each(doc.keybindings, function(name, value){
+          return <key name={name} value={value} />
+        })}
+      </cli-keybindings>
       <settings>
         {each(doc.settings, function(name, value){
           return <param name={name} value={value} />
         })}
       </settings>
-      <routes>
-        {each(doc.routes, function(name, route){
-          var xml = <route />;
-          for(key in route){ xml.@[key] = route[key]; }
-          return xml;
-        })}
-      </routes>
     </configuration>
   </section>
 </document>
-  ).toXMLString());
+  );
 }

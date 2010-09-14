@@ -1,18 +1,6 @@
 function(head, req){
-  var each = function(obj, callback){
-    var result = <></>;
-    for(key in obj){
-      if(obj.hasOwnProperty(key)){
-        result += callback(key, obj[key]);
-      }
-    }
-    return result;
-  };
-
   var doc = getRow().value;
 
-  start({code: 200, headers: {'Content-Type': 'freeswitch/xml'}});
-  send('<?xml version="1.0" encoding="UTF-8" standalone="no" ?>' + "\n");
   send(
 <document type="freeswitch/xml">
   <section name="configuration">
@@ -22,9 +10,14 @@ function(head, req){
           return <param name={name} value={value} />
         })}
       </settings>
+      
+      <templates>
+        {each(doc.templates, function(name, template){
+          return <template name={name}>{template}</template>;
+        })}
+      </templates>
     </configuration>
   </section>
 </document>
   );
-  ;
 }

@@ -1,15 +1,18 @@
 require "innate"
 require_relative "lib/fxc"
-Dir.glob(Fxc::PATH + "/node/*.rb").each { |node|
-  require node
-}
-require Fxc::PATH + "lib/rack/middleware"
+require_relative 'node/proxy'
+
+require FXC::ROOT/"model/init"
+require FXC::ROOT/"lib/rack/middleware"
+
+Innate::Response.options.headers['Content-Type'] = 'freeswitch/xml'
+
 Innate.middleware! do |mw|
-  mw.use Fxc::Rack::Middleware
+  mw.use FXC::Rack::Middleware
   mw.use Rack::CommonLogger
   mw.innate
 end
 
 if $0 == __FILE__
-  Innate.start :root => Fxc::PATH, :file => __FILE__
+  Innate.start :root => FXC::ROOT.to_s, :file => __FILE__
 end

@@ -1,0 +1,14 @@
+<extension name="#{@did.description}">
+  <condition field="destination_number" expression="^1?(#{@did.number})$">
+    <action application="set" data="dialed_extension=$1"/>
+    <action application="export" data="dialed_extension=$1"/>
+    <action application="bind_meta_app" data="1 b s execute_extension::dx XML features"/>
+    <action application="bind_meta_app" data="2 b s execute_extension::cf XML features"/>
+    <action application="set" data="ringback=${us-ring}"/>
+    <action application="set" data="transfer_ringback=$${hold_music}"/>
+    <action application="pre_answer"/>
+    <action application="hangup" data="NETWORK_OUT_OF_ORDER"/>
+  </condition>
+
+</extension>
+

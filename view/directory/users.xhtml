@@ -1,0 +1,5 @@
+<users>
+  <?r @users.each do |user| ?>
+    #{render_view(:user, :user => user)}
+  <?r end ?>
+</users>

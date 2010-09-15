@@ -1,33 +1,4 @@
-require 'innate'
-require 'makura'
-Makura::Model.database = 'fxc'
-
-module Fxc
-  class Proxy
-    Innate.node "/", self
-    provide :html, engine: :None
-
-    def index
-      "Welcome to Fxc!"
-    end
-
-    def configuration(name, hostname)
-      response['Content-Type'] = 'freeswitch/xml'
-
-      Configuration.render(name, hostname).to_s + "\n"
-
-    rescue Makura::Error => ex
-      Innate::Log.error(ex)
-      <<-XML
-<document type="freeswitch/xml">
-  <section name="result">
-    <result status="not found" />
-  </section>
-</document>
-      XML
-    end
-  end
-
+module FXC
   class Configuration
     include Makura::Model
 

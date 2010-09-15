@@ -1,0 +1,14 @@
+<?r @extensions.each do |extension| ?>
+  <extension name="#{h extension.name}">
+  <?r extension.conditions.each do |condition| ?>
+    <condition field="#{h condition.matcher}" expression="#{h condition.expression}" break="#{condition.break_string}">
+    <?r condition.actions.each do |action| ?>
+      <action application="#{h action.application}" data="#{h action.data}" />
+    <?r end ?>
+    <?r condition.anti_actions.each do |anti_action| ?>
+      <anti-action application="#{h anti_action.application}" data="#{h anti_action.data}" />
+    <?r end ?>
+    </condition>
+  <?r end ?>
+  </extension>
+<?r end ?>

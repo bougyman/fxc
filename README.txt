@@ -15,16 +15,14 @@ a couchDB backend for serving FreeSWITCH configuration.
 
 * Serves Configuration Files for Multiple FreeSWITCH servers
 
-== REQUIREMENTS:
-
-* CouchDB
-* Ruby (1.9.2 preferred)
-* Innate (gem install innate)
-
 == INSTALL:
 
-* Install couch db and create the 'fxc' database
-* Install Ruby
+* Install CouchDB (>= 1.0.1)
+  * On sustems that don't provide this version, you can use:
+    http://github.com/jhs/build-couchdb
+* Install Ruby (1.9.2 preferred)
+  * On systems that don't provide this version, you can use:
+    http://rvm.beginrescueend.com/
 * Gem install makura, innate, nokogiri
 * run ruby sync_couch.rb
 

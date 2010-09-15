@@ -1,0 +1,42 @@
+<extension name="#{@did.description}">
+  <condition field="destination_number" expression="^1?(#{@did.number})$">
+    <action application="set" data="dialed_extension=$1"/>
+    <action application="export" data="dialed_extension=$1"/>
+    <action application="bind_meta_app" data="1 b s execute_extension::dx XML features"/>
+    <action application="bind_meta_app" data="2 b s execute_extension::cf XML features"/>
+    <action application="set" data="ringback=${us-ring}"/>
+    <action application="set" data="transfer_ringback=$${hold_music}"/>
+    <action application="set" data="call_timeout=30"/>
+    <action application="set" data="hangup_after_bridge=true"/>
+    <action application="set" data="continue_on_fail=true"/>
+    <action application="db" data="insert/$${domain}-call_return/#{@did.user.extension}/${caller_id_number}" />
+    <action application="db" data="insert/$${domain}-last_dial_ext/#{@did.user.extension}/${uuid}"/>
+    <action application="set" data="called_party_callgroup=#{@did.user.user_variables_dataset.filter(:name => 'accountcode').first.value || 'none'}"/>
+    <action application="db" data="insert/$${domain}-last_dial/${called_party_callgroup}/${uuid}" />
+    <action application="set" data="call_record_path=$${base_dir}/recordings/${strftime(%Y%m%d-%H%M%S)}-${caller_id_number}-#{@did.user.extension}-IN.wav" />
+    <action application="set" data="api_hangup_hook=system mv ${call_record_path} ${call_record_path}-DONE" />
+    <action application="set" data="record_stereo=true" />
+    <action application="set" data="RECORD_ANSWER_REQ=true"/>
+    <action application="set" data="new_call_direction=in"/>
+    <action application="set" data="innercalls_exten=#{@did.user.extension}"/>
+    <action application="set" data="call_direction=in"/>
+    <action application="export" data="dialed_user=#{@did.user.extension}"/>
+    <action application="record_session" data="${call_record_path}" />
+    <?r if (@did.user.max_call_length.to_i * 60) > 0 ?>
+    <action application="sched_hangup" data="+#{@did.user.max_call_length.to_i * 60} alloted_timeout"/>
+    <?r end ?>
+    <?r if @did.user.nibble_rate ?>
+    <action application="nibblebill" data="heartbeat 60" />
+    <action application="set" data="nibble_rate=#{@did.user.nibble_rate}" />
+    <action application="set" data="nibble_account=#{@did.user.extension}" />
+    <action application="bridge" data="{global_heartbeat=60,nibble_rate=#{@did.user.nibble_rate},nibble_account=#{@did.user.extension}}#{@did.dialstring}"/>
+    <?r else ?>
+    <action application="bridge" data="#{@did.dialstring}"/>
+    <?r end ?>
+    <action application="answer"/>
+    <action application="sleep" data="1000"/>
+    <action application="voicemail" data="default $${domain} #{@did.user.extension}"/>
+  </condition>
+
+</extension>
+

@@ -1,65 +1,26 @@
+# Copyright (c) 2008-2009 The Rubyists, LLC (effortless systems) <rubyists@rubyists.com>
+# Distributed under the terms of the MIT license.
+# The full text can be found in the LICENSE file included with this software
+#
+require "pathname"
 
-module Fxc
-
-  # :stopdoc:
-  LIBPATH = ::File.expand_path(::File.dirname(__FILE__)) + ::File::SEPARATOR
-  PATH = ::File.dirname(LIBPATH) + ::File::SEPARATOR
-  # :startdoc:
-
-  # Returns the version string for the library.
-  #
-  def self.version
-    @version ||= File.read(path('version.txt')).strip
+class Pathname
+  def /(other)
+    join(other.to_s)
   end
+end
 
-  # Returns the library path for the module. If any arguments are given,
-  # they will be joined to the end of the libray path using
-  # <tt>File.join</tt>.
-  #
-  def self.libpath( *args, &block )
-    rv =  args.empty? ? LIBPATH : ::File.join(LIBPATH, args.flatten)
-    if block
-      begin
-        $LOAD_PATH.unshift LIBPATH
-        rv = block.call
-      ensure
-        $LOAD_PATH.shift
-      end
-    end
-    return rv
+$LOAD_PATH.unshift(File.expand_path("../", __FILE__))
+module FXC
+  ROOT = Pathname($LOAD_PATH.first).join("..").expand_path
+  LIBROOT = ROOT/:lib
+  MIGRATION_ROOT = ROOT/:db/:migrations
+  MODEL_ROOT = ROOT/:model
+  SPEC_HELPER_PATH = ROOT/:spec
+  def self.load_fsr
+    require "fsr"
+  rescue LoadError
+    require "rubygems"
+    require "fsr"
   end
-
-  # Returns the lpath for the module. If any arguments are given,
-  # they will be joined to the end of the path using
-  # <tt>File.join</tt>.
-  #
-  def self.path( *args, &block )
-    rv = args.empty? ? PATH : ::File.join(PATH, args.flatten)
-    if block
-      begin
-        $LOAD_PATH.unshift PATH
-        rv = block.call
-      ensure
-        $LOAD_PATH.shift
-      end
-    end
-    return rv
-  end
-
-  # Utility method used to require all files ending in .rb that lie in the
-  # directory below this file that has the same name as the filename passed
-  # in. Optionally, a specific _directory_ name can be passed in such that
-  # the _filename_ does not have to be equivalent to the directory.
-  #
-  def self.require_all_libs_relative_to( fname, dir = nil )
-    dir ||= ::File.basename(fname, '.*')
-    search_me = ::File.expand_path(
-        ::File.join(::File.dirname(fname), dir, '**', '*.rb'))
-
-    Dir.glob(search_me).sort.each {|rb| require rb}
-  end
-
-end  # module Fxc
-
-Fxc.require_all_libs_relative_to(__FILE__)
-
+end

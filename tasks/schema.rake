@@ -4,13 +4,13 @@
 #
 task :test_db do
   require_relative "../lib/fxc"
-  require Fxc::ROOT/:spec/:db_helper
+  require FXC::ROOT/:spec/:db_helper
 end
 
 desc "Dump the test schema"
 task :schema, :format, :needs => [:test_db] do |t,args|
   args.with_defaults(:format => "html")
-  descs = Fxc.db.tables.inject([]) do |arr, table|
+  descs = FXC.db.tables.inject([]) do |arr, table|
     arr << "\\dd #{table};\\d+ #{table}"
   end
   commands = descs.join(";")

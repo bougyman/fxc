@@ -6,17 +6,17 @@ desc "migrate to latest version of db"
 task :migrate, :version do |_, args|
   args.with_defaults(:version => nil)
   require File.expand_path("../../lib/fxc", __FILE__)
-  require Fxc::LIBPATH + "/fxc/db"
+  require_relative "../lib/fxc/db"
   require 'sequel/extensions/migration'
 
-  raise "No DB found" unless Fxc.db
+  raise "No DB found" unless FXC.db
 
-  require Fxc::PATH + "/model/init"
+  require_relative "../model/init"
 
   if args.version.nil?
-    Sequel::Migrator.apply(Fxc.db, Fxc::MIGRATION_ROOT)
+    Sequel::Migrator.apply(FXC.db, FXC::MIGRATION_ROOT)
   else
-    Sequel::Migrator.run(Fxc.db, Fxc::MIGRATION_ROOT, :target => args.version.to_i)
+    Sequel::Migrator.run(FXC.db, FXC::MIGRATION_ROOT, :target => args.version.to_i)
   end
 
 end

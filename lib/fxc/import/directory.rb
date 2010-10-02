@@ -25,36 +25,31 @@ module FXC
         doc[:groups] = groups = []
         node.xpath('groups/group').each do |group|
           groups << group[:name]
-          grp = {server: server, 
-                 domain: domain,
-                 name: group[:name],
-                 type: "group",
-                 members: []}
-          grp["_id"] = "%s_%s_%s.group" % [server, domain, grp[:name]]
-          #couchdb.save(grp)
           group.xpath('users/user').each do |user|
             if user[:type] == "pointer"
-              grp[:members] << user[:id]
+              u_id = "%s_%s_%s.user" % [server, domain, user[:id]] 
+              begin
+                u = couchdb[u_id]
+                u["groups"] << group[:name] unless u["groups"].include?(group[:name]) 
+                couchdb.save u
+              rescue Makura::Error::ResourceNotFound => e
+                warn "Pointer record found for non-existent user #{u_id}"
+              end
             else
-              u = parse_user(user, grp)
-              grp[:members] << u[:id] unless grp[:members].include?(u[:id])
-              rec = couchdb.save(u)
+              rec = couchdb.save parse_user(user, group[:name], server, domain)
               p rec
             end
           end
-          rec = couchdb.save(grp)
-          p rec
         end
 
         doc
       end
 
-      def parse_user(node, group_doc)
+      def parse_user(node, group, server, domain)
         #users[node[:id]] = user = {}
-        server, domain, group = group_doc[:server], group_doc[:domain], group_doc[:name]
-        user = {type: 'user', server: server, group: group, domain: domain}
+        user = {type: 'user', server: server, groups: [group], domain: domain}
         user[:id]   = node[:id]
-        user["_id"] = "%s_%s_%s_%s.user" % [server, domain, group, user[:id]]
+        user["_id"] = "%s_%s_%s.user" % [server, domain,  user[:id]]
 
         # node is a user, user is the hash representation
         user[:params] = params = {}

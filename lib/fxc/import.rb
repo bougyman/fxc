@@ -147,7 +147,8 @@ module FXC
     def convert_dialplan
       require_relative 'import/dialplan'
       read_dialplan do |xml|
-        xml.xpath('context').each do |context|
+        xml.xpath('//context').each do |context|
+          p "converting context #{context}"
           # do stuff with that
           FXC::Converter::Dialplan.parse_context(context, @opts[:server])
         end
@@ -187,6 +188,6 @@ end
 if __FILE__ == $0
   converter = FXC::Converter.new
   #converter.convert(:configuration)
-  converter.convert(:directory)
-  #converter.convert(:dialplan)
+  #converter.convert(:directory)
+  converter.convert(:dialplan)
 end

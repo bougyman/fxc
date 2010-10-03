@@ -1,5 +1,5 @@
 require_relative '../import'
-require_relative '../../../spec/db_helper' # comment this out for production
+#require_relative '../../../spec/db_helper' # comment this out for production
 require_relative '../../../model/init'
 
 module FXC

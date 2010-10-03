@@ -14,7 +14,7 @@ $LOAD_PATH.unshift(File.expand_path("../", __FILE__))
 module FXC
   ROOT = Pathname($LOAD_PATH.first).join("..").expand_path
   LIBROOT = ROOT/:lib
-  MIGRATION_ROOT = ROOT/:db/:migrations
+  MIGRATION_ROOT = ROOT/:db/:migrate
   MODEL_ROOT = ROOT/:model
   SPEC_HELPER_PATH = ROOT/:spec
   def self.load_fsr
